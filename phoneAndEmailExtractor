@@ -1,0 +1,41 @@
+#! python3
+#phoneAndEmail.py - finds phone numbers and email addresses on the clipboard
+
+import pyperclip, re
+
+phoneRegex = re.compile(r'''(
+	(\d{3}|\(\d{3}\))?				#area code - optional; 3 digits or 3 digits in parenthesis
+	(\s|-|\.)?						#seperator - optional; space or hyphen or any character
+	(\d{3})							#first 3 digits
+	(\s|-|\.)						#seperator - space or hyphen or any character				
+	(\d{4})							#last 4 digits
+	(\s*(ext|x|ext.)\s*(\d{2,5}))?	#extension - optional; any number of spaces followed by ext, x, or ext. followed by 2 t o5 digits
+	)''', re.VERBOSE)
+
+emailRegex = re.compile(r'''(			
+	[a-zA-Z0-9._%+-]+				#username
+	@
+	[a-zA-Z0-9.-]+					#domain name
+	(\.[a-zA-Z]{2,4})				#dot anything between 2 and 4 characters
+	)''', re.VERBOSE)
+
+
+text = str(pyperclip.paste())
+matches = []												#store matches in a list
+for groups in phoneRegex.findall(text):						
+	phoneNum = '-'.join([groups[1], groups[3], groups[5]])	#one standard format for phone no: a string appending area code, 3 digits, last 4 digits and ext
+	if groups[8] != '':
+		phoneNum += ' x' + groups[8]
+	matches.append(phoneNum)
+
+for groups in emailRegex.findall(text):
+	matches.append(groups[0])								#group 0 matches entire regex. append group 0 of each email match
+
+
+if len(matches) > 0:
+	pyperclip.copy('\n'.join(matches))	
+	print('Copied to clipboard: ')
+	print('\n'.join(matches))
+
+else:
+	print('No phone numbers or email addresses found.')
