@@ -1,0 +1,17 @@
+#! python3
+#googleTabs.py - opens several Google search results in seperate tabs, using text from the clipboard
+
+import requests, bs4, webbrowser, sys, pyperclip
+
+print('Googling...')
+res = requests.get('https://www.google.com/search?q=' + ''.join(pyperclip.paste()))
+res.raise_for_status()
+
+#retreive top search result links
+soup = bs4.BeautifulSoup(res.text)
+
+#open browser tab for each result
+linkElems = soup.select('.r a')
+numOpen = min(2, len(linkElems))
+for i in range(numOpen):
+	webbrowser.open('http://google.com' + linkElems[i].get('href'))
