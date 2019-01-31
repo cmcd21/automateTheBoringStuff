@@ -1,0 +1,12 @@
+#! python3
+#function to get text from a Word doc
+
+import docx
+
+def gettext(filename):
+	doc = docx.Document(filename)
+	fulltext = []
+	for para in doc.paragraphs:
+		fulltext.append(para.text)
+	return '\n\n'.join(fulltext)
+
